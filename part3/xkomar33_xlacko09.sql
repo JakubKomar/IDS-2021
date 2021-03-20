@@ -102,19 +102,19 @@ CREATE TABLE workingOn(
 --------------example data----------
 
 insert into person(birthNum,firstName,lastName,email,phoneNum,city,psc,street,streetNum) values (8003231379,'Carl','Johnson','cj@email.cz','+4201234-56789','San Andreas',12345,'grove street','127/I');
-insert into person(birthNum,firstName,MIDNAME,lastName,email,phoneNum,city,psc,street,streetNum) values (7908031846,'Franta','Pepa','Jenička','franta@gmail.com','+4201454-56789','Brno',66345,'hradecká','62');
-insert into person(birthNum,firstName,email,phoneNum,city,psc,street,streetNum) values (6151238280,'Dana','dana@gmail.com','+4201454-56789','Brno',12345,'hradecká','62');
-insert into person(birthNum,firstName,email,phoneNum,city,psc,street,streetNum) values (6651173529,'Hana','hana@gmail.com','+42034-56789','Praha',64563,'hradecká','62');
-insert into person(birthNum,firstName,email,phoneNum,city,psc,street,streetNum) values (9861263478,'Jana','jana@gmail.com','+420454-56789','Kardaška',24567,'hradecká','62');
+insert into person(birthNum,firstName,MIDNAME,lastName,email,phoneNum,city,psc,street,streetNum) values (7908031846,'Franta','Pepa','Jenicka','franta@gmail.com','+4201454-56789','Brno',66345,'hradecka','62');
+insert into person(birthNum,firstName,email,phoneNum,city,psc,street,streetNum) values (6151238280,'Dana','dana@gmail.com','+4201454-56789','Brno',12345,'hradecka','62');
+insert into person(birthNum,firstName,email,phoneNum,city,psc,street,streetNum) values (6651173529,'Hana','hana@gmail.com','+42034-56789','Praha',64563,'hradecka','62');
+insert into person(birthNum,firstName,email,phoneNum,city,psc,street,streetNum) values (9861263478,'Jana','jana@gmail.com','+420454-56789','Kardaska',24567,'hradecka','62');
 
-insert into person(birthNum,firstName,email,phoneNum,city,psc,street,streetNum) values (6611241670,'honza','test2@email.cz','+420987654321','praha',54321,'nemám rád ponďělí','123');
-insert into person(birthNum,firstName,email,phoneNum,city,psc,street,streetNum) values (6812247849,'Ráčna','test3@email.cz','+42848949421','ČB',45645,'Palírenská','123');
-insert into person(birthNum,firstName,lastName,email,phoneNum,city,psc,street,streetNum) values (9354205960,'Lenka','Nováková','test4@email.cz','+420494841','ČB',45645,'Palírenská','123');
-insert into person(birthNum,firstName,lastName,email,phoneNum,city,psc,street,streetNum) values (9760201077,'Eliška','Hyánková','test5@email.cz','+42044988421','ČB',45645,'Palírenská','123');
+insert into person(birthNum,firstName,email,phoneNum,city,psc,street,streetNum) values (6611241670,'honza','test2@email.cz','+420987654321','praha',54321,'nemam rad pondeli','123');
+insert into person(birthNum,firstName,email,phoneNum,city,psc,street,streetNum) values (6812247849,'Racna','test3@email.cz','+42848949421','cB',45645,'Palirenska','123');
+insert into person(birthNum,firstName,lastName,email,phoneNum,city,psc,street,streetNum) values (9354205960,'Lenka','Novakova','test4@email.cz','+420494841','cB',45645,'Palirenska','123');
+insert into person(birthNum,firstName,lastName,email,phoneNum,city,psc,street,streetNum) values (9760201077,'Eliska','Hyankova','test5@email.cz','+42044988421','cB',45645,'Palirenska','123');
 --SELECT * from person;
 
-INSERT INTO DEPARTMENT(nameD,descriptionD,room) VALUES ('main department','Toto je hlavní oddělení.',201);
-INSERT INTO DEPARTMENT(nameD,descriptionD,room) VALUES ('secondary department','Toto je vedlejší oddělení.',301);
+INSERT INTO DEPARTMENT(nameD,descriptionD,room) VALUES ('main department','Toto je hlavni oddeleni.',201);
+INSERT INTO DEPARTMENT(nameD,descriptionD,room) VALUES ('secondary department','Toto je vedlejsi oddeleni.',301);
 --SELECT * from DEPARTMENT;
 
 insert into worker(workingIn,birthNum,specialization,title,wage) VALUES (1,8003231379,'coffee maker','bc','11000');
@@ -145,9 +145,9 @@ insert into requirement(id,price,typeR,validity) values (2,6000,'propaganda',TO_
 insert into requirement(id,price,typeR,validity,state,tempWorkers) values (2,7000,'Internet ad',TO_DATE('2021/2/10','yyyy/mm/dd'),'work in progress',3);
 insert into requirement(id,price,typeR,validity,state,tempWorkers) values (2,10000,'Magazine ad',TO_DATE('2021/1/10','yyyy/mm/dd'),'finished',5);
 
-insert into requirement(id,price,typeR,validity) values (3,5000,'plakát',TO_DATE('2021/3/10','yyyy/mm/dd'));
-insert into requirement(id,price,typeR,validity) values (3,6000,'něco',TO_DATE('2021/4/10','yyyy/mm/dd'));
-insert into requirement(id,price,typeR,validity,state,tempWorkers) values (3,7000,'nevím',TO_DATE('2021/2/10','yyyy/mm/dd'),'work in progress',3);
+insert into requirement(id,price,typeR,validity) values (3,5000,'plakat',TO_DATE('2021/3/10','yyyy/mm/dd'));
+insert into requirement(id,price,typeR,validity) values (3,6000,'neco',TO_DATE('2021/4/10','yyyy/mm/dd'));
+insert into requirement(id,price,typeR,validity,state,tempWorkers) values (3,7000,'nevim',TO_DATE('2021/2/10','yyyy/mm/dd'),'work in progress',3);
 insert into requirement(id,price,typeR,validity,state,tempWorkers) values (3,10000,'tohle',TO_DATE('2021/1/10','yyyy/mm/dd'),'finished',5);
 
 --SELECT * from requirement;
@@ -167,10 +167,10 @@ insert into workingOn(requirementID,requirementDiscriminator,departmentKEY) VALU
 
 --------------select----------------
 
-SELECT DISTINCT REQ.* FROM MYORDER O,REQUIREMENT REQ WHERE REQ.id=O.id AND O.id=1 ;  --zobraz všechny požadavky z objednávky č.1
-SELECT DISTINCT I.* FROM invoice I,MYCLIENT CLI WHERE CLI.birthNum=I.clientBN AND CLI.birthNum=6812247849;  --faktury uživatele s rodným číslem 6812247849
-SELECT DISTINCT REQ.* FROM requirement REQ,myOrder O,myClient CLI WHERE CLI.birthNum=O.clientBN AND CLI.birthNum=6611241670 AND O.id=REQ.id;    --zobrazí všechny požadavky klienta s rodným číslem 6611241670
-SELECT P.firstName, CLI.birthNum,COUNT(*) pocet, SUM(PRICE) celkem from PERSON P,MYCLIENT CLI,MYORDER O,REQUIREMENT REQ where P.birthNum=CLI.birthNum AND CLI.birthNum=O.clientBN AND O.id=REQ.id GROUP BY CLI.birthNum,P.firstName; --zobrazí počet požadavků a celkovou cenu u každého klienta
-SELECT D.nameD,D.id,COUNT(*) pocetPracovniku,SUM(WAGE) nakladyNaMzdy from department D, WORKER W WHERE  W.workingIn=D.id GROUP BY D.nameD,D.id ;    --zobrazí u každého odělení počet pracovníků a celkové náklady na mzdy
-SELECT P.firstName,P.lastName, CLI.birthNum,P.phoneNum,P.email from PERSON P,MYCLIENT CLI WHERE  P.birthNum=CLI.birthNum AND NOT EXISTS(SELECT * from MYORDER ORD WHERE ORD.clientBN=CLI.birthNum); --vypíše klienty, kteří si nic neobjednali a jejich kontaktní údaje 
-SELECT * FROM  MYCLIENT WHERE BIRTHNUM in (SELECT clientBN FROM myOrder WHERE DEADLINE BETWEEN TO_DATE('2021-01-01','yyyy/mm/dd') AND TO_DATE('2021-12-30','yyyy/mm/dd'));  --Vypíše rodná čísla klientů, kteří v roce 2021 umístili objednávku/y
+SELECT DISTINCT REQ.* FROM MYORDER O,REQUIREMENT REQ WHERE REQ.id=O.id AND O.id=1 ;  --zobraz vsechny pozadavky z objednavky c.1
+SELECT DISTINCT I.* FROM invoice I,MYCLIENT CLI WHERE CLI.birthNum=I.clientBN AND CLI.birthNum=6812247849;  --faktury uzivatele s rodnym cislem 6812247849
+SELECT DISTINCT REQ.* FROM requirement REQ,myOrder O,myClient CLI WHERE CLI.birthNum=O.clientBN AND CLI.birthNum=6611241670 AND O.id=REQ.id;    --zobrazi vsechny pozadavky klienta s rodnym cislem 6611241670
+SELECT P.firstName, CLI.birthNum,COUNT(*) pocet, SUM(PRICE) celkem from PERSON P,MYCLIENT CLI,MYORDER O,REQUIREMENT REQ where P.birthNum=CLI.birthNum AND CLI.birthNum=O.clientBN AND O.id=REQ.id GROUP BY CLI.birthNum,P.firstName; --zobrazi pocet pozadavků a celkovou cenu u kazdeho klienta
+SELECT D.nameD,D.id,COUNT(*) pocetPracovniku,SUM(WAGE) nakladyNaMzdy from department D, WORKER W WHERE  W.workingIn=D.id GROUP BY D.nameD,D.id ;    --zobrazi u kazdeho odeleni pocet pracovniků a celkove naklady na mzdy
+SELECT P.firstName,P.lastName, CLI.birthNum,P.phoneNum,P.email from PERSON P,MYCLIENT CLI WHERE  P.birthNum=CLI.birthNum AND NOT EXISTS(SELECT * from MYORDER ORD WHERE ORD.clientBN=CLI.birthNum); --vypise klienty, kteri si nic neobjednali a jejich kontaktni údaje 
+SELECT * FROM  MYCLIENT WHERE BIRTHNUM in (SELECT clientBN FROM myOrder WHERE DEADLINE BETWEEN TO_DATE('2021-01-01','yyyy/mm/dd') AND TO_DATE('2021-12-30','yyyy/mm/dd'));  --Vypise rodna cisla klientů, kteri v roce 2021 umistili objednavku/y
