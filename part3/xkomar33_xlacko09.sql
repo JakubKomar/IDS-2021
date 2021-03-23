@@ -5,7 +5,7 @@ DROP TABLE myOrder CASCADE CONSTRAINTS;
 DROP TABLE invoice CASCADE CONSTRAINTS;
 DROP TABLE department CASCADE CONSTRAINTS;
 DROP TABLE Requirement CASCADE CONSTRAINTS;
-DROP TABLE workingOn CASCADE CONSTRAINTS;
+DROP TABLE Requirement_Department_bind  CASCADE CONSTRAINTS;
 
 
 CREATE TABLE person (
@@ -89,7 +89,7 @@ CREATE TABLE requirement(
     tempWorkers int DEFAULT 0,
     state VARCHAR(32) DEFAULT 'received'
 );
-CREATE TABLE workingOn(
+CREATE TABLE Requirement_Department_bind (
     requirementID NUMBER not NULL,
     requirementDiscriminator NUMBER not NULL,
     FOREIGN KEY (requirementID,requirementDiscriminator) REFERENCES requirement(id, discriminator),
@@ -162,8 +162,8 @@ UPDATE requirement SET invoice=2 WHERE (id,discriminator) in ((3,8),(3,9));
 UPDATE requirement SET invoice=3 WHERE (id,discriminator) in ((3,10),(3,11));
 --SELECT * from requirement;
 
-insert into workingOn(requirementID,requirementDiscriminator,departmentKEY) VALUES (1,1,1);
---SELECT * from workingOn;
+insert into Requirement_Department_bind (requirementID,requirementDiscriminator,departmentKEY) VALUES (1,1,1);
+--SELECT * from Requirement_Department_bind ;
 
 --------------select----------------
 
