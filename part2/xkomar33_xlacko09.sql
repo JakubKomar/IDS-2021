@@ -164,8 +164,8 @@ insert into Requirement_Department_bind (requirementID,requirementDiscriminator,
 --------------select----------------
 
 SELECT DISTINCT REQ.* FROM "ORDER" O,REQUIREMENT REQ WHERE REQ.id=O.id AND O.id=1 ;  --zobraz vsechny pozadavky z objednavky c.1
-SELECT DISTINCT I.* FROM invoice I,"Client" CLI WHERE CLI.birthNum=I.clientBN AND CLI.birthNum=6812247849;  --faktury uzivatele s rodnym cislem 6812247849
-SELECT DISTINCT REQ.* FROM requirement REQ,"ORDER" O,"Client" CLI WHERE CLI.birthNum=O.clientBN AND CLI.birthNum=6611241670 AND O.id=REQ.id;    --zobrazi vsechny pozadavky klienta s rodnym cislem 6611241670
+SELECT DISTINCT I.* FROM invoice I,"Client" CLI WHERE CLI.birthNum=I.clientBN AND CLI.birthNum='6812247849';  --faktury uzivatele s rodnym cislem 6812247849
+SELECT DISTINCT REQ.* FROM requirement REQ,"ORDER" O,"Client" CLI WHERE CLI.birthNum=O.clientBN AND CLI.birthNum='6611241670' AND O.id=REQ.id;    --zobrazi vsechny pozadavky klienta s rodnym cislem 6611241670
 SELECT P.firstName, CLI.birthNum,COUNT(*) pocet, SUM(PRICE) celkem from PERSON P,"Client" CLI,"ORDER" O,REQUIREMENT REQ where P.birthNum=CLI.birthNum AND CLI.birthNum=O.clientBN AND O.id=REQ.id GROUP BY CLI.birthNum,P.firstName; --zobrazi pocet pozadavků a celkovou cenu u kazdeho klienta
 SELECT D.nameD,D.id,COUNT(*) pocetPracovniku,SUM(WAGE) nakladyNaMzdy from department D, WORKER W WHERE  W.workingIn=D.id GROUP BY D.nameD,D.id ;    --zobrazi u kazdeho odeleni pocet pracovniků a celkove naklady na mzdy
 SELECT P.firstName,P.lastName, CLI.birthNum,P.phoneNum,P.email from PERSON P,"Client" CLI WHERE  P.birthNum=CLI.birthNum AND NOT EXISTS(SELECT * from "ORDER" ORD WHERE ORD.clientBN=CLI.birthNum); --vypise klienty, kteri si nic neobjednali a jejich kontaktni údaje 
