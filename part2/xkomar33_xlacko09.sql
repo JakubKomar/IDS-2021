@@ -1,11 +1,10 @@
 BEGIN
 FOR rec IN (SELECT table_name from user_tables)
-LOOP
-    DBMS_OUTPUT.PUT_LINE('Removing: ' || rec.TABLE_NAME);
-    EXECUTE IMMEDIATE 'DROP TABLE "' || rec.TABLE_NAME || '" CASCADE CONSTRAINTS';
-END LOOP;
+    LOOP
+        DBMS_OUTPUT.PUT_LINE('Removing: ' || rec.TABLE_NAME);
+        EXECUTE IMMEDIATE 'DROP TABLE "' || rec.TABLE_NAME || '" CASCADE CONSTRAINTS';
+    END LOOP;
 END;
-
 CREATE TABLE person (
     birthNum NUMBER(10,0) PRIMARY KEY,
 
@@ -64,6 +63,10 @@ CREATE TABLE myOrder (
     state VARCHAR(32) DEFAULT 'sended',
     dateOfCreation DATE default sysdate not null
 );
+CREATE TABLE requirement_counters(
+    id NUMBER REFERENCES myOrder ON DELETE CASCADE PRIMARY KEY,
+    count Number default 1
+);
 CREATE TABLE invoice(
     id NUMBER GENERATED  by default on null as IDENTITY PRIMARY KEY,
     makedBy INT NOT NULL ,
@@ -74,12 +77,12 @@ CREATE TABLE invoice(
     dateOfCreation DATE default sysdate not null
 );
 CREATE TABLE requirement(
-    id NUMBER NOT NULL,
-    FOREIGN KEY (id) REFERENCES myOrder,
-    discriminator NUMBER GENERATED  by default on null as IDENTITY ,
-    CONSTRAINT pk PRIMARY KEY(id,discriminator),
+    id NUMBER DEFAULT NULL,
+        FOREIGN KEY (id) REFERENCES myOrder,
+    discriminator NUMBER ,
+        CONSTRAINT pk PRIMARY KEY(id,discriminator),
     invoice NUMBER ,
-    FOREIGN KEY (invoice) REFERENCES invoice,
+        FOREIGN KEY (invoice) REFERENCES invoice,
 
     typeR VARCHAR(32),
     price int DEFAULT 0 not NULL,
@@ -87,6 +90,7 @@ CREATE TABLE requirement(
     tempWorkers int DEFAULT 0,
     state VARCHAR(32) DEFAULT 'received'
 );
+
 CREATE TABLE workingOn(
     requirementID NUMBER not NULL,
     requirementDiscriminator NUMBER not NULL,
@@ -95,6 +99,43 @@ CREATE TABLE workingOn(
     FOREIGN KEY (departmentKEY) REFERENCES department,
     CONSTRAINT primerKey PRIMARY KEY(requirementID,requirementDiscriminator,departmentKEY)
 );
+
+CREATE OR REPLACE TRIGGER requirement_generate_sequence
+AFTER INSERT ON myOrder FOR EACH ROW
+DECLARE
+BEGIN
+    /*SELECT :id into ord_id from myOrder;*/
+    /*EXECUTE IMMEDIATE 'CREATE SEQUENCE "requirements_' || :new.id || '"' ;*/
+    DBMS_OUTPUT.PUT_LINE('inserting new counter' || :new.id);
+    INSERT INTO requirement_counters (id) VALUES (:new.id);
+end;
+
+CREATE OR REPLACE TRIGGER requirement_insertion
+BEFORE INSERT On requirement FOR EACH ROW
+DECLARE
+    cnt NUMBER;
+BEGIN
+    SELECT count INTO :new.discriminator FROM requirement_counters WHERE id=:new.id;
+    SELECT count INTO cnt FROM requirement_counters WHERE id=:new.id;
+    UPDATE requirement_counters set count=cnt+1 where id=:new.id;
+
+end;
+
+CREATE OR REPLACE TRIGGER requirement_update
+BEFORE UPDATE On requirement FOR EACH ROW
+DECLARE
+    discriminatorChange EXCEPTION;
+BEGIN
+    /*SELECT id into current_id from REQUIREMENT where DISCRIMINATOR IS NULL;
+    seq := 'requirements_' || current_id ||'.NEXTVAL';
+    SELECT seq into current_inc from dual;
+    UPDATE REQUIREMENT set DISCRIMINATOR=current_inc where DISCRIMINATOR IS NULL;*/
+    IF :old.discriminator <> :new.discriminator THEN
+        RAISE discriminatorChange;
+    end if;
+    EXCEPTION WHEN discriminatorChange then
+        dbms_output.PUT_LINE('Trying to modify internally managed key');
+end;
 
 
 --------------example data----------
