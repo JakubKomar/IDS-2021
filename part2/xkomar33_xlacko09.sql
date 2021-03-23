@@ -68,7 +68,7 @@ CREATE TABLE "ORDER" (
     dateOfCreation DATE default sysdate not null
 );
 CREATE TABLE requirement_counters(
-    id NUMBER REFERENCES myOrder ON DELETE CASCADE PRIMARY KEY,
+    id NUMBER REFERENCES "ORDER" ON DELETE CASCADE PRIMARY KEY,
     count Number default 1
 );
 CREATE TABLE invoice(
@@ -98,15 +98,15 @@ CREATE TABLE Requirement_Department_bind (
     CONSTRAINT primerKey PRIMARY KEY(requirementID,requirementDiscriminator,departmentKEY)
 );
 CREATE OR REPLACE TRIGGER requirement_generate_sequence
-AFTER INSERT ON myOrder FOR EACH ROW
+AFTER INSERT ON "ORDER" FOR EACH ROW
 DECLARE
 BEGIN
-    /*SELECT :id into ord_id from myOrder;*/
+    /*SELECT :id into ord_id from "ORDER";*/
     /*EXECUTE IMMEDIATE 'CREATE SEQUENCE "requirements_' || :new.id || '"' ;*/
     DBMS_OUTPUT.PUT_LINE('inserting new counter' || :new.id);
     INSERT INTO requirement_counters (id) VALUES (:new.id);
 end;
-
+/
 CREATE OR REPLACE TRIGGER requirement_insertion
 BEFORE INSERT On requirement FOR EACH ROW
 DECLARE
@@ -117,7 +117,7 @@ BEGIN
     UPDATE requirement_counters set count=cnt+1 where id=:new.id;
 
 end;
-
+/
 CREATE OR REPLACE TRIGGER requirement_update
 BEFORE UPDATE On requirement FOR EACH ROW
 DECLARE
@@ -133,7 +133,7 @@ BEGIN
     EXCEPTION WHEN discriminatorChange then
         dbms_output.PUT_LINE('Trying to modify internally managed key');
 end;
-
+/
 --------------example data----------
 
 insert into person(birthNum,firstName,lastName,email,phoneNum,city,psc,street,streetNum) values ('8003231379','Carl','Johnson','cj@email.cz','+4201234-56789','San Andreas','12345','grove street','127/I');
