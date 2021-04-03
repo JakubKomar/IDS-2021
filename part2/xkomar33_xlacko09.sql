@@ -28,8 +28,10 @@ CREATE TABLE person (
     street VARCHAR2(32) not NULL,
     streetNum VARCHAR2(10) not NULL,
 
-    CHECK (regexp_like(birthNum,'^[0-9]{10}$')),
+    CHECK (regexp_like(birthNum,'^[0-9]{9,10}$')),
     CHECK (mod( CAST(birthNum as INT),11)=0),
+    CHECK (SUBSTR(birthNum, 7,3)='000' or LENGTH(birthNum)=10),
+    CHECK (to_date(SUBSTR(birthNum, 5,2) || (case when CAST(SUBSTR(birthNum, 3,1) as int) >= 5 then CAST(SUBSTR(birthNum, 3,1) as int)-5 else CAST(SUBSTR(birthNum, 3,1) as int) end) || SUBSTR(birthNum, 4,1) || (case when CAST(SUBSTR(birthNum, 1,2) as int) > 53 then '19' || SUBSTR(birthNum, 1,2) else '20' || SUBSTR(birthNum, 1,2) end),'ddmmyyyy') is not null),
     CHECK (regexp_like(phoneNum,'^\+?[0-9|-]*$')),
     CHECK (regexp_like(email,'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')),
     CHECK (regexp_like(psc,'^[0-9]{5}$'))
