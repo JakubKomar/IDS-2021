@@ -87,6 +87,7 @@ CREATE TABLE invoice(
 
     dateOfCreation DATE default sysdate not null
 );
+
 CREATE TABLE requirement(
     id NUMBER NOT NULL REFERENCES "ORDER",
     discriminator NUMBER ,

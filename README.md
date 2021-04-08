@@ -8,8 +8,7 @@ popis:
 Vytvoření + naplnění tavbulek, poté zadefinuje či vytvoří pokročilá omezení či objekty databáze. Dále skript bude obsahovat ukázkové příkazy manipulace dat a dotazy demonstrující použití výše zmiňovaných omezení a objektů tohoto skriptu (např. pro demonstraci použití indexů zavolá nejprve skript EXPLAIN PLAN na dotaz bez indexu, poté vytvoří index, a nakonec zavolá EXPLAIN PLAN na dotaz s indexem; pro demostranci databázového triggeru se provede manipulace s daty, která vyvolá daný trigger; atp.).
 
 to do:
-2 trigry-       1. na generování pk (bylo by vhodné to provést u faktur)
-                2. jaký chceme
+1 trigr-   2. jaký chceme
 2 procedury-    v jedné musí být kurzor, 
                 ošetření výjimek, 
                 použití proměnné s datovým typem odkazujícím se na řádek či typ sloupce tabulky (table_name.column_name%TYPE nebo table_name%ROWTYPE)
