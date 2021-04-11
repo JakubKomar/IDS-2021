@@ -143,6 +143,40 @@ BEGIN
         dbms_output.PUT_LINE('Trying to modify internally managed key');
 end;
 /
+CREATE OR REPLACE PROCEDURE computeFinalPrice (Order_id Requirement.id%TYPE)
+AS
+    final_price "ORDER".finalPrice%TYPE;
+    noSuchOrder exception;
+    found_id number;
+BEGIN
+    Select COUNT(*) into found_id from "ORDER" where id=Order_id;
+    if found_id <> 1 then
+        raise noSuchOrder;
+    end if;
+    SELECT SUM(price) INTO final_price FROM REQUIREMENT where id=Order_id;
+    UPDATE "ORDER" set finalPrice=final_price where id=Order_id;
+    exception when noSuchOrder then
+        DBMS_OUTPUT.PUT_LINE('No such order exists in the system.');
+END;
+/
+CREATE OR REPLACE PROCEDURE computeDepartmentEarnings(department_id IN Department.id%TYPE)
+IS
+    CURSOR cur IS SELECT * from Requirement_Department_bind where departmentKEY=department_id;
+    cur_row Requirement_Department_bind%ROWTYPE;
+    sum_price number;
+    current_price number;
+BEGIN
+    OPEN cur;
+    sum_price := 0;
+    LOOP
+        FETCH cur INTO cur_row;
+        EXIT WHEN cur%NOTFOUND;
+        SELECT price INTO current_price FROM REQUIREMENT WHERE id=cur_row.requirementID and discriminator=cur_row.requirementDiscriminator;
+        sum_price := sum_price + current_price;
+    end loop;
+    CLOSE cur;
+    DBMS_OUTPUT.PUT_LINE('Department made: ' || sum_price);
+END;
 --------------example data----------
 
 insert into person(birthNum,firstName,lastName,email,phoneNum,city,psc,street,streetNum) values ('8003231379','Carl','Johnson','cj@email.cz','+4201234-56789','San Andreas','12345','grove street','127/I');
