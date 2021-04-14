@@ -110,8 +110,6 @@ CREATE OR REPLACE TRIGGER requirement_generate_sequence
 AFTER INSERT ON "ORDER" FOR EACH ROW
 DECLARE
 BEGIN
-    /*SELECT :id into ord_id from "ORDER";*/
-    /*EXECUTE IMMEDIATE 'CREATE SEQUENCE "requirements_' || :new.id || '"' ;*/
     DBMS_OUTPUT.PUT_LINE('inserting new counter' || :new.id);
     INSERT INTO requirement_counters (id) VALUES (:new.id);
 end;
@@ -132,10 +130,6 @@ BEFORE UPDATE On requirement FOR EACH ROW
 DECLARE
     discriminatorChange EXCEPTION;
 BEGIN
-    /*SELECT id into current_id from REQUIREMENT where DISCRIMINATOR IS NULL;
-    seq := 'requirements_' || current_id ||'.NEXTVAL';
-    SELECT seq into current_inc from dual;
-    UPDATE REQUIREMENT set DISCRIMINATOR=current_inc where DISCRIMINATOR IS NULL;*/
     IF :old.discriminator <> :new.discriminator THEN
         RAISE discriminatorChange;
     end if;
@@ -143,7 +137,8 @@ BEGIN
         dbms_output.PUT_LINE('Trying to modify internally managed key');
 end;
 /
-CREATE OR REPLACE PROCEDURE computeFinalPrice (Order_id Requirement.id%TYPE)
+ -- computes finalPrice for given order as sum of requirement costs and adds addtional_costs
+CREATE OR REPLACE PROCEDURE computeFinalPrice (Order_id Requirement.id%TYPE, additional_costs INT)
 AS
     final_price "ORDER".finalPrice%TYPE;
     noSuchOrder exception;
@@ -154,11 +149,14 @@ BEGIN
         raise noSuchOrder;
     end if;
     SELECT SUM(price) INTO final_price FROM REQUIREMENT where id=Order_id;
+    DBMS_OUTPUT.PUT_LINE('Total costs of infividual requirements: ' || final_price);
+    final_price := final_price + additional_costs;
     UPDATE "ORDER" set finalPrice=final_price where id=Order_id;
     exception when noSuchOrder then
         DBMS_OUTPUT.PUT_LINE('No such order exists in the system.');
 END;
 /
+-- Prints to the output how much given department already made
 CREATE OR REPLACE PROCEDURE computeDepartmentEarnings(department_id IN Department.id%TYPE)
 IS
     CURSOR cur IS SELECT * from Requirement_Department_bind where departmentKEY=department_id;
@@ -209,9 +207,10 @@ insert into "Client"(birthNum) VALUES ('9354205960');
 insert into "Client"(birthNum) VALUES ('9760201077');
 --SELECT * from "Client";
 
-insert into "ORDER"(clientBN,workerBN,finalPrice,deadLine) values ('6611241670','8003231379',20000,TO_DATE('2021/3/10','yyyy/mm/dd'));
+insert into "ORDER"(clientBN,workerBN,finalPrice,deadLine) values ('6611241670','8003231379',50000,TO_DATE('2021/3/10','yyyy/mm/dd'));
 insert into "ORDER"(clientBN,workerBN,finalPrice,deadLine) values ('6611241670','8003231379',60000,TO_DATE('2021/6/18','yyyy/mm/dd'));
 insert into "ORDER"(clientBN,workerBN,finalPrice,deadLine,dateOfCreation) values ('6812247849','7908031846',70000,TO_DATE('2022/7/18','yyyy/mm/dd'),TO_DATE('2020/7/18','yyyy/mm/dd'));
+insert into "ORDER"(clientBN,workerBN,finalPrice,deadLine,state) values ('9354205960','6151238280',60000,TO_DATE('2019/8/24','yyyy/mm/dd'),'finished');
 --SELECT * from "ORDER";
 
 insert into requirement(id,price,typeR,validity) values (1,5000,'Bilboard',TO_DATE('2021/3/10','yyyy/mm/dd'));
@@ -252,4 +251,7 @@ SELECT P.firstName, CLI.birthNum,COUNT(*) pocet, SUM(PRICE) celkem from PERSON P
 SELECT D.nameD,D.id,COUNT(*) pocetPracovniku,SUM(WAGE) nakladyNaMzdy from department D, WORKER W WHERE  W.workingIn=D.id GROUP BY D.nameD,D.id ;    --zobrazi u kazdeho odeleni pocet pracovniků a celkove naklady na mzdy
 SELECT P.firstName,P.lastName, CLI.birthNum,P.phoneNum,P.email from PERSON P,"Client" CLI WHERE  P.birthNum=CLI.birthNum AND NOT EXISTS(SELECT * from "ORDER" ORD WHERE ORD.clientBN=CLI.birthNum); --vypise klienty, kteri si nic neobjednali a jejich kontaktni údaje 
 SELECT * FROM  "Client" WHERE BIRTHNUM in (SELECT clientBN FROM "ORDER" WHERE DEADLINE BETWEEN TO_DATE('2021-01-01','yyyy/mm/dd') AND TO_DATE('2021-12-30','yyyy/mm/dd'));  --Vypise rodna cisla klientů, kteri v roce 2021 umistili objednavku/y
+SELECT DISTINCT p.firstName,p.lastName,p.email from WORKER w, PERSON p where w.birthNum=p.birthNum and EXISTS (Select O.workerBN from "ORDER" O where workerBN=w.birthNum and state!='finished'); --vypise vsetkych pracovnikov, ktori maju na starosti neukoncenu objednavku
+SELECT p.firstName,p.lastName,p.birthNum from "Client" c,PERSON p where c.birthNum=p.birthNum and c.birthNum IN (SELECT clientBN from (SELECT O.clientBN, SUM(O.finalPrice) totalSum from "ORDER" O group by O.clientBN) where totalSum>100000); --zobraz klientov, ktori uz v agenture utratili viac ako 100 000Kc
 
+commit;
