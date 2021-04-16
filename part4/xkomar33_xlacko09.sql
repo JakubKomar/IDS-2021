@@ -175,6 +175,7 @@ BEGIN
     CLOSE cur;
     DBMS_OUTPUT.PUT_LINE('Department made: ' || sum_price);
 END;
+/
 --------------example data----------
 
 insert into person(birthNum,firstName,lastName,email,phoneNum,city,psc,street,streetNum) values ('8003231379','Carl','Johnson','cj@email.cz','+4201234-56789','San Andreas','12345','grove street','127/I');
@@ -259,7 +260,7 @@ BEGIN
     computeFinalPrice(2, 30000);
     computeDepartmentEarnings(1);
 end;
-
+/
 --------- roles of system that acts on behalf of user, additional security checks are necessary ---------
 GRANT SELECT, INSERT, DELETE ON "ORDER" TO XKOMAR33;
 GRANT SELECT, INSERT, DELETE ON "REQUIREMENT" TO XKOMAR33;

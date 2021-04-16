@@ -175,6 +175,7 @@ BEGIN
     CLOSE cur;
     DBMS_OUTPUT.PUT_LINE('Department made: ' || sum_price);
 END;
+/
 --------------example data----------
 
 insert into person(birthNum,firstName,lastName,email,phoneNum,city,psc,street,streetNum) values ('8003231379','Carl','Johnson','cj@email.cz','+4201234-56789','San Andreas','12345','grove street','127/I');
