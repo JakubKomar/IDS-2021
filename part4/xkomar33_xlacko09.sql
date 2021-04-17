@@ -264,14 +264,17 @@ end;
 GRANT SELECT, INSERT, DELETE ON "ORDER" TO XKOMAR33;
 GRANT SELECT, INSERT, DELETE ON "REQUIREMENT" TO XKOMAR33;
 GRANT SELECT ON "INVOICE" TO XKOMAR33;
-GRANT UPDATE ON "PERSON" TO XKOMAR33;
+GRANT SELECT, UPDATE ON "PERSON" TO XKOMAR33;
 
 -------- materialized view for other user -----------
 -- CREATE MATERIALIZED VIEW activeRequirements AS SELECT * from XLACKO09."ORDER" O, XLACKO09.REQUIREMENT WHERE O.state!='finished';
 
 -------- index performance --------------------------
-SELECT COUNT(*) noOfPeople, p.city FROM PERSON p, "Client" c where p.birthNum=c.birthNum GROUP BY p.city;
+EXPLAIN PLAN FOR SELECT COUNT(*) noOfPeople, p.city FROM PERSON p, "Client" c where p.birthNum=c.birthNum GROUP BY p.city;
+SELECT PLAN_TABLE_OUTPUT FROM TABLE(DBMS_XPLAN.DISPLAY());
 CREATE INDEX person_city_I ON "PERSON"(city);
-SELECT COUNT(*) noOfPeople, p.city FROM PERSON p, "Client" c where p.birthNum=c.birthNum GROUP BY p.city;
+commit;
+EXPLAIN PLAN FOR SELECT COUNT(*) noOfPeople, p.city FROM PERSON p, "Client" c where p.birthNum=c.birthNum GROUP BY p.city;
+SELECT PLAN_TABLE_OUTPUT FROM TABLE(DBMS_XPLAN.DISPLAY());
 
 commit;
