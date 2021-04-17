@@ -32,13 +32,13 @@ CREATE TABLE person (
     CHECK (mod( CAST(birthNum as INT),11)=0),
     CHECK (SUBSTR(birthNum, 7,3)='000' or LENGTH(birthNum)=10),
     CHECK (to_date(SUBSTR(birthNum, 5,2) ||
-                   (case when CAST(SUBSTR(birthNum, 3,1) as int) >= 5 then
-                       CAST(SUBSTR(birthNum, 3,1) as int)-5
-                       else CAST(SUBSTR(birthNum, 3,1) as int) end) ||
-                   SUBSTR(birthNum, 4,1) ||
-                   (case when CAST(SUBSTR(birthNum, 1, 2) as int) > 53 then
-                       (case when LENGTH(birthNum)=9 then '18' else '19' end) || SUBSTR(birthNum, 1,2)
-                       else (case when LENGTH(birthNum)=9 then '19' else '20' end) || SUBSTR(birthNum, 1,2) end),'ddmmyyyy') is not null),
+        (case when CAST(SUBSTR(birthNum, 3,1) as int) >= 5 then
+            CAST(SUBSTR(birthNum, 3,1) as int)-5
+            else CAST(SUBSTR(birthNum, 3,1) as int) end) ||
+        SUBSTR(birthNum, 4,1) ||
+        (case when CAST(SUBSTR(birthNum, 1, 2) as int) > 53 then
+            (case when LENGTH(birthNum)=9 then '18' else '19' end) || SUBSTR(birthNum, 1,2)
+                else (case when LENGTH(birthNum)=9 then '19' else '20' end) || SUBSTR(birthNum, 1,2) end),'ddmmyyyy') is not null),
     CHECK (regexp_like(phoneNum,'^\+?[0-9|-]*$')),
     CHECK (regexp_like(email,'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')),
     CHECK (regexp_like(psc,'^[0-9]{5}$'))
@@ -122,7 +122,6 @@ BEGIN
     SELECT count INTO :new.discriminator FROM requirement_counters WHERE id=:new.id;
     SELECT count INTO cnt FROM requirement_counters WHERE id=:new.id;
     UPDATE requirement_counters set count=cnt+1 where id=:new.id;
-
 end;
 /
 CREATE OR REPLACE TRIGGER requirement_update
@@ -175,6 +174,7 @@ BEGIN
     CLOSE cur;
     DBMS_OUTPUT.PUT_LINE('Department made: ' || sum_price);
 END;
+/
 --------------example data----------
 
 insert into person(birthNum,firstName,lastName,email,phoneNum,city,psc,street,streetNum) values ('8003231379','Carl','Johnson','cj@email.cz','+4201234-56789','San Andreas','12345','grove street','127/I');
@@ -259,7 +259,7 @@ BEGIN
     computeFinalPrice(2, 30000);
     computeDepartmentEarnings(1);
 end;
-
+/
 --------- roles of system that acts on behalf of user, additional security checks are necessary ---------
 GRANT SELECT, INSERT, DELETE ON "ORDER" TO XKOMAR33;
 GRANT SELECT, INSERT, DELETE ON "REQUIREMENT" TO XKOMAR33;
